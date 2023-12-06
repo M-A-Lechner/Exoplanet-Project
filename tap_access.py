@@ -7,6 +7,7 @@ import io
 def _get_request(query: str, format: str = "json") -> list:
     """
     Handles all requests to the TAP database.
+
     :param query: String query in SQL-type.
     :param format: Not implemented. Do not use.
     :return: Returned data from TAP database as list.
@@ -30,9 +31,9 @@ def get_table_information(table_name: str) -> list:
     
 
 def get_planetary_data(query: str):
-    data = _get_request(http_query)
+    data = _get_request(query)
 
-    return pd.read_json(data) if data else []
+    return pd.DataFrame.from_dict(data) if data else []
     
     # code from here is never run
     plt.xlabel("dec")
