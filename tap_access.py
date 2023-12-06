@@ -4,31 +4,39 @@ import requests
 import json
 import io
 
-def get_available_tables():
-    # get all available tables that can be queried
-    tables_res = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+schema_name,table_name+from+TAP_SCHEMA.tables&format=json")
-    if tables_res.ok:
-        poss_tables = json.loads(tables_res.text)
-        return poss_tables
+def _get_request(query: str, format: str = "json") -> list:
+    """
+    Handles all requests to the TAP database.
+    :param query: String query in SQL-type.
+    :param format: Not implemented. Do not use.
+    :return: Returned data from TAP database as list.
+    """
+    http_query = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=" + query.replace(" ", "%20").replace("+", "%20") + "&format=" + format
+    data = requests.get(http_query)
+    if data.ok:
+        return json.loads(data.text)
     else:
-        print(tables_res.reason)
+        print(data.reason)
         return []
+        
 
-def get_planetary_data(query: str, format: str = "json"):
-    http_query = query.replace(" ", "+")
-    #req = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+top+1000+ra,dec+from+ps&format=json")
-    req = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=" + http_query + "&format=" + format)
+def get_available_tables() -> list:
+    # get all available tables that can be queried
+    #return _get_request("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+TAP_SCHEMA.tables")
+    return _get_request("select schema_name,table_name,description from TAP_SCHEMA.tables")
 
-    if req.ok:
-        df = pd.read_json(io.StringIO(req.text))
-        #print(df)
-        return df
+def get_table_information(table_name: str) -> list:
+    return _get_request("select * from TAP_SCHEMA.columns where table_name like %27" + table_name +"%27")
+    
 
-        plt.xlabel("dec")
-        plt.ylabel("ra")
-        plt.plot(df["dec"], df["ra"], ".")
-        #plt.plot(x_points, y_points)
-        plt.show()
-    else:
-        print(req.reason)
-        return None
+def get_planetary_data(query: str):
+    data = _get_request(http_query)
+
+    return pd.read_json(data) if data else []
+    
+    # code from here is never run
+    plt.xlabel("dec")
+    plt.ylabel("ra")
+    plt.plot(df["dec"], df["ra"], ".")
+    #plt.plot(x_points, y_points)
+    plt.show()

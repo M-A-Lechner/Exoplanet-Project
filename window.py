@@ -1,4 +1,3 @@
-# importing various libraries
 import sys
 from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QListWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -8,11 +7,8 @@ import random
 
 import tap_access
 
-# main window
-# which inherits QDialog
+# Main Window
 class Window(QDialog):
-	
-    # constructor
     def __init__(self, parent=None):
         super(Window, self).__init__(parent)
 
@@ -46,6 +42,7 @@ class Window(QDialog):
         # setting layout to the main window
         self.setLayout(root_layout)
 
+
     def get_tables(self):
         tables = tap_access.get_available_tables()
         for table in tables:
@@ -53,21 +50,13 @@ class Window(QDialog):
 
 
     def plot(self):
-
-        # random data
         data = tap_access.get_planetary_data("select ra,dec from ps where default_flag = 1 and pl_controv_flag = 0 order by ra,dec desc")
-
-        # clearing old figure
         self.figure.clear()
 
-        # create an axis
         ax = self.figure.add_subplot()
         ax.set_xlabel("dec")
         ax.set_ylabel("ra")
 
-        # plot data
         ax.plot(data["dec"], data["ra"], 'r.')
-
-        # refresh canvas
         self.canvas.draw()
 
