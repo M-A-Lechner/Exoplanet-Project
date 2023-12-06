@@ -36,8 +36,8 @@ def get_planetary_data(query: str):
     return pd.DataFrame.from_dict(data) if data else []
     
     # code from here is never run
-    plt.xlabel("dec")
-    plt.ylabel("ra")
-    plt.plot(df["dec"], df["ra"], ".")
-    #plt.plot(x_points, y_points)
-    plt.show()
+    # plt.xlabel("dec")
+    # plt.ylabel("ra")
+    # plt.plot(df["dec"], df["ra"], ".")
+    # plt.plot(x_points, y_points)
+    # plt.show()
