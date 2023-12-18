@@ -50,7 +50,7 @@ class Window(QDialog):
 
 
     def plot(self):
-        data = tap_access.get_planetary_data("select ra,dec from ps where default_flag = 1 and pl_controv_flag = 0 order by ra,dec desc")
+        data = tap_access.get_planetary_data("select pl_masse,ra,dec from ps where default_flag = 1 and pl_controv_flag = 0 order by ra,dec desc")
         self.figure.clear()
 
         ax = self.figure.add_subplot()

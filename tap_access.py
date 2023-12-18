@@ -4,15 +4,15 @@ import requests
 import json
 import io
 
-def _get_request(query: str, format: str = "json") -> list:
+def _get_request(query: str) -> list:
     """
     Handles all requests to the TAP database.
 
-    :param query: String query in SQL-type.
-    :param format: Not implemented. Do not use.
+    :param query: SQL query as string.
     :return: Returned data from TAP database as list.
     """
-    http_query = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=" + query.replace(" ", "%20").replace("+", "%20") + "&format=" + format
+    query = query.replace(" ", "%20").replace("+", "%20").replace("'", "%27")
+    http_query = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=" + query + "&format=json"
     data = requests.get(http_query)
     if data.ok:
         return json.loads(data.text)
@@ -27,7 +27,7 @@ def get_available_tables() -> list:
     return _get_request("select schema_name,table_name,description from TAP_SCHEMA.tables")
 
 def get_table_information(table_name: str) -> list:
-    return _get_request("select * from TAP_SCHEMA.columns where table_name like %27" + table_name +"%27")
+    return _get_request("select * from TAP_SCHEMA.columns where table_name like '" + table_name +"'")
     
 
 def get_planetary_data(query: str):
@@ -35,9 +35,9 @@ def get_planetary_data(query: str):
 
     return pd.DataFrame.from_dict(data) if data else []
     
-    # code from here is never run
-    # plt.xlabel("dec")
-    # plt.ylabel("ra")
-    # plt.plot(df["dec"], df["ra"], ".")
-    # plt.plot(x_points, y_points)
-    # plt.show()
+# plt.xlabel("dec")
+# plt.ylabel("ra")
+# plt.plot(df["dec"], df["ra"], ".")
+# plt.plot(x_points, y_points)
+# plt.show()
+
